@@ -2,6 +2,8 @@
 
 A deep U-net neural network that uses semantic segmentation to identity the background of an image!
 
+Here's a Google Colab notebook to play with the code: https://colab.research.google.com/drive/1Lvo0sloII-doh7C3Gs99kBPkhp2hh2qJ?usp=sharing
+
 <img src='./samples/1.png' style='width: 50%' />
 <img src='./samples/2.png' style='width: 50%' />
 

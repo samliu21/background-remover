@@ -1,55 +1,50 @@
 import tensorflow as tf
 
-def encoding_block(inp, filters, dropout_prob=0.5):
-	X = tf.keras.layers.Conv2D(filters, 3, activation='relu', padding='same', kernel_initializer='he_normal', kernel_regularizer='l2')(inp)
-	X = tf.keras.layers.BatchNormalization()(X)
-	X = tf.keras.layers.Conv2D(filters, 3, activation='relu', padding='same', kernel_initializer='he_normal', kernel_regularizer='l2')(X)
-	X = tf.keras.layers.BatchNormalization()(X)
-	X = tf.keras.layers.MaxPooling2D()(X)
-	X = tf.keras.layers.Dropout(dropout_prob)(X)
+from model_parts import DownSample, UpSample
 
-	return X
+class Unet():
+	def __init__(self):
+		self.inp = tf.keras.layers.Input(shape=(None, None, 3))
 
-def decoding_block(inp, res_con, filters, dropout_prob=0.5):
-	X = tf.keras.layers.Conv2DTranspose(filters, 3, 2, activation='relu', padding='same', kernel_regularizer='l2')(inp)
+		self.conv1 = DownSample(64)(self.inp)
+		self.conv2 = DownSample(128)(self.conv1, kernel_regularizer='l2')
+		self.conv3 = DownSample(256)(self.conv2, kernel_regularizer='l2')
+		self.conv4 = DownSample(512)(self.conv3, kernel_regularizer='l2')
+		self.conv5 = DownSample(512)(self.conv4, dropout=0.4, kernel_regularizer='l2')
 
-	if res_con is None:
-		merge = X
-	else:
-		merge = tf.concat((X, res_con), axis=-1)
-	
-	X = tf.keras.layers.Dropout(dropout_prob)(merge)
-	X = tf.keras.layers.Conv2D(filters, 3, activation='relu', padding='same', kernel_initializer='he_normal', kernel_regularizer='l2')(X)
-	X = tf.keras.layers.BatchNormalization()(X)
-	X = tf.keras.layers.Conv2D(filters, 3, activation='relu', padding='same', kernel_initializer='he_normal', kernel_regularizer='l2')(X)
-	X = tf.keras.layers.BatchNormalization()(X)
+		self.conv6 = UpSample(512)(self.conv5, self.conv4, kernel_regularizer='l2')
+		self.conv7 = UpSample(256)(self.conv6, self.conv3, kernel_regularizer='l2')
+		self.conv8 = UpSample(128)(self.conv7, self.conv2, kernel_regularizer='l2')
+		self.conv9 = UpSample(64)(self.conv8, self.conv1, kernel_regularizer='l2')
+		self.conv10 = UpSample(64)(self.conv9, None, dropout=0.4, kernel_regularizer='l2')
 
-	return X
+		self.conv11 = tf.keras.layers.Conv2D(1, 1, padding='same')(self.conv10)
+		self.conv11 = tf.keras.layers.Activation('sigmoid')(self.conv11)
 
-inp = tf.keras.layers.Input(shape=(None, None, 3))
+		self.model = tf.keras.Model(inputs=self.inp, outputs=self.conv11)
 
-conv1 = encoding_block(inp, 64)
-conv2 = encoding_block(conv1, 128)
-conv3 = encoding_block(conv2, 256)
-conv4 = encoding_block(conv3, 512)
-conv5 = encoding_block(conv4, 512)
+		lr_schedule = tf.keras.optimizers.schedules.ExponentialDecay(
+			0.002,
+			decay_steps=300,
+			decay_rate=0.98,
+			staircase=True,
+		)
 
-conv6 = decoding_block(conv5, conv4, 512)
-conv7 = decoding_block(conv6, conv3, 256)
-conv8 = decoding_block(conv7, conv2, 128)
-conv9 = decoding_block(conv8, conv1, 64)
-conv10 = decoding_block(conv9, None, 64)
+		self.model.compile(
+			optimizer=tf.keras.optimizers.Adam(lr_schedule), 
+			loss=tf.keras.losses.BinaryCrossentropy(),
+			metrics=['accuracy', IoU],
+		)
 
-conv11 = tf.keras.layers.Conv2D(1, 1, padding='same', activation='sigmoid')(conv10)
+	def get_model(self):
+		return self.model
 
-unet = tf.keras.Model(inputs=inp, outputs=conv11)
+def IoU(y_true, y_pred):
+	intersection = tf.reduce_sum(y_true * y_pred)
+	y_pred = tf.cast(y_pred >= 0.5, tf.float32)
+	union = tf.reduce_sum(tf.cast((y_true + y_pred) >= 1, tf.float32)) + 1e-6
+	return intersection / union
 
-lr = 0.001
-unet.compile(
-	optimizer=tf.keras.optimizers.Adam(lr), 
-	loss=tf.keras.losses.BinaryCrossentropy(), 
-	metrics=['accuracy']
-)
+unet = Unet().get_model()
 
 unet.summary()
-

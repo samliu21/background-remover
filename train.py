@@ -1,68 +1,65 @@
-import tensorflow_datasets as tfds
 import tensorflow as tf
-import numpy as np
-import matplotlib.pyplot as plt
 
-from model import unet
+from model import unet, IoU
 
-ds = tfds.load('oxford_iiit_pet:3.*.*')
+img_datagen = tf.keras.preprocessing.image.ImageDataGenerator(
+	rescale=1./255,
+)
+mask_datagen = tf.keras.preprocessing.image.ImageDataGenerator()
 
-train = ds['train']
-test = ds['test']
-all = train.concatenate(test)
+LOAD_EXISTING_MODEL = False
 
-DS_SIZE = len(all)
-train_split = int(DS_SIZE * 0.9)
-train = all.take(train_split)
-test = all.skip(train_split)
+TRAIN_IMG_PATH = 'train_img'
+TRAIN_MASK_PATH = 'train_mask'
+VAL_IMG_PATH = 'val_img'
+VAL_MASK_PATH = 'val_mask'
 
-LOAD_EXISTING_MODEL = True
+seed = 1
+params = dict(
+	target_size=(128, 128),
+	class_mode=None,
+	seed=seed,
+)
 
-def process_dataset(dataset, augment=False):
-	"""
-	Resize images to IMAGE_SIZE
-	Convert segmentation mask to 0s and 1s for BinaryCrossentropy
-	"""
-	IMAGE_SIZE = (128, 128)
+train_img_gen = img_datagen.flow_from_directory(
+	directory=TRAIN_IMG_PATH,
+	**params,
+)
+train_mask_gen = mask_datagen.flow_from_directory(
+	directory=TRAIN_MASK_PATH,
+	color_mode='grayscale',
+	**params,
+)
 
-	dataset = dataset.map(
-		lambda x: (
-			tf.cast(tf.image.resize(x['image'], IMAGE_SIZE), tf.uint8),
-			tf.cast(tf.image.resize(tf.cast(x['segmentation_mask'] != 2, tf.uint8), IMAGE_SIZE), tf.uint8),
-		)
-	).cache().shuffle(100).batch(32)
+val_img_gen = img_datagen.flow_from_directory(
+	directory=VAL_IMG_PATH,
+	**params,
+)
+val_mask_gen = mask_datagen.flow_from_directory(
+	directory=VAL_MASK_PATH,
+	color_mode='grayscale',
+	**params,
+)
 
-	def augment(img, mask):
-		do_flip = tf.constant(np.random.rand() > 0.5)
-
-		img = tf.cond(do_flip, lambda: tf.image.flip_left_right(img), lambda: img)
-		mask = tf.cond(do_flip, lambda: tf.image.flip_left_right(mask), lambda: mask)
-
-		img = tf.image.random_brightness(img, 0.2)
-
-		return (img, mask)
-	
-	if augment:
-		dataset = dataset.map(lambda x, y: augment(x, y)).repeat(3)
-
-	return dataset
-
-def load_model():
-	"""
-	Load trained model
-	"""
-	reloaded = tf.keras.models.load_model('./unet.h5')
-
-	return reloaded
-
-train = process_dataset(train, augment=True)
-test = process_dataset(test)
+train = zip(train_img_gen, train_mask_gen)
+val = zip(val_img_gen, val_mask_gen)
 
 if LOAD_EXISTING_MODEL:
-	model = load_model()
-else:
-	model = unet
+	unet = tf.keras.models.load_model('unet.h5', custom_objects={'IoU': IoU})
 
-history = model.fit(train, epochs=2, validation_data=test)
+# class SaveModel(tf.keras.callbacks.Callback):
+#     def on_epoch_end(self, epoch, logs=None):
+#         self.model.save('ynet{}.h5'.format(epoch), overwrite=True,) 
 
-model.save('./unet.h5')
+# cbk = SaveModel()
+
+EPOCHS = 50
+
+unet.fit(
+	train, 
+	steps_per_epoch=300, 
+	epochs=EPOCHS, 
+	validation_data=val,
+	validation_steps=10,
+	# callbacks=[cbk],
+)

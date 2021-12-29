@@ -6,7 +6,7 @@ The model reached a binary accuracy of ~90% and an IoU of ~65% on the test set o
 
 Walk through a demonstration using the following link: https://colab.research.google.com/drive/19zZupsuejVLYtzib_6qZU2TCrIvKUWuj?usp=sharing.
 
-<img src='readme_images.png' style='width: 60%' />
+<img src='test_images/readme_images.png' style='width: 60%' />
 
 ## Dataset
 The <a href='https://cocodataset.org/#home'>COCO Dataset</a> was used to train the model.
@@ -24,9 +24,9 @@ Since the target images are portraits, only the COCO images with one person with
 
 ## Files
 - `model.py` and `model_parts.py` contain the U-net model
-- `coco.py` is used to preprocess and filter to COCO dataset
+- `coco.py` is used to preprocess and filter the COCO dataset
 - `train.py` is used to train the U-net
-- `results.py` is used to visualize the results of the model
+- `results.py` is used to visualize the results of the trained model
 
 ## Model
 

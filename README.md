@@ -8,11 +8,11 @@ Walk through a demonstration using the following link: https://colab.research.go
 
 ## Model
 
-We used the class U-net model: a series of convolutions, then transpose convolutions to reduce, then increase the dimensions of the image. Residual connections are used to propagate earlier weights later into the model to help with gradient vanishing. 
+We used the classic U-net model: a series of convolutions followed by transpose convolutions to reduce, then increase the dimensions of the image. Residual connections are used to propagate earlier weights later into the model to help with backward propagation. 
 
 Since the network is fully convolutional, the U-net can take images of any image dimension. The only requirement is that the width and length are multiples of 32. 
 
-The model was trained on 128 x 128 images. Thus, the dimensions of an inputted image is reduced to a multiple of 32 under 128 so that the image is more similar to that of the training data. The outputted mask is then scaled back to the original dimensions of the image. 
+The model was trained on 128 x 128 images. Thus, the dimensions of an inputted image are reduced to 128 x 128. The outputted mask is then scaled back to the original dimensions of the image. 
 
 ```
 __________________________________________________________________________________________________
@@ -225,7 +225,7 @@ ________________________________________________________________________________
 ## Dataset
 The <a href='https://cocodataset.org/#home'>COCO Dataset</a> was used to train the model.
 
-Since the target images are portraits, only the COCO images with one person whose area took up between 20 and 70 percent of image were kept. No data augmentation was used.
+Since the target images are portraits, only the COCO images with one person with area between 20 and 70 percent of the entire image were kept. No data augmentation was used.
 
 ## Reproducing Steps
 1. Run `git clone https://github.com/samliu21/background-remover`. This will create a folder called `background-remover` containing most of the necessary files.

@@ -6,6 +6,20 @@ Walk through a demonstration using the following link: https://colab.research.go
 
 <img src='readme_images.png' style='width: 60%' />
 
+## Dataset
+The <a href='https://cocodataset.org/#home'>COCO Dataset</a> was used to train the model.
+
+Since the target images are portraits, only the COCO images with one person with area between 20 and 70 percent of the entire image were kept. No data augmentation was used.
+
+## Reproducing Steps
+1. Run `git clone https://github.com/samliu21/background-remover`. This will create a folder called `background-remover` containing most of the necessary files.
+2. Download `train_img`, `train_mask`, `val_img`, and `val_mask` from the following Google Drive: https://drive.google.com/drive/folders/1jtBTz1Nc9USNIkUnLCOraa-CaP4z61SW?usp=sharing. These folders contain the training data for the model.
+3. Move these files into the `background-remover` folder.
+4. Move into the folder using `cd background-remover`.
+5. `conda create --name bgrm --file requirements.txt`
+6. `conda activate bgrm`
+7. `python train.py` to start training!
+
 ## Model
 
 We used the classic U-net model: a series of convolutions followed by transpose convolutions to reduce, then increase the dimensions of the image. Residual connections are used to propagate earlier weights later into the model to help with backward propagation. 
@@ -221,17 +235,3 @@ Trainable params: 22,836,609
 Non-trainable params: 9,984
 __________________________________________________________________________________________________
 ```
-
-## Dataset
-The <a href='https://cocodataset.org/#home'>COCO Dataset</a> was used to train the model.
-
-Since the target images are portraits, only the COCO images with one person with area between 20 and 70 percent of the entire image were kept. No data augmentation was used.
-
-## Reproducing Steps
-1. Run `git clone https://github.com/samliu21/background-remover`. This will create a folder called `background-remover` containing most of the necessary files.
-2. Download `train_img`, `train_mask`, `val_img`, and `val_mask` from the following Google Drive: https://drive.google.com/drive/folders/1jtBTz1Nc9USNIkUnLCOraa-CaP4z61SW?usp=sharing. These folders contain the training data for the model.
-3. Move these files into the `background-remover` folder.
-4. Move into the folder using `cd background-remover`.
-5. `conda create --name bgrm --file requirements.txt`
-6. `conda activate bgrm`
-7. `python train.py` to start training!

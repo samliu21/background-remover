@@ -6,7 +6,7 @@ Here's a Google Drive link to a pretrained model with a 65% IoU and 90% binary a
 
 Here's a Google Colab notebook to play with the code: https://colab.research.google.com/drive/1Lvo0sloII-doh7C3Gs99kBPkhp2hh2qJ?usp=sharing.
 
-<img src='readme_images.png' style='width: 30%' />
+<img src='readme_images.png' style='width: 60%' />
 
 ## Model
 

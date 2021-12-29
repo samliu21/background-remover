@@ -2,6 +2,8 @@
 
 A deep U-net neural network that uses semantic segmentation to identity the background of a portrait image!
 
+The model reached a binary accuracy of ~90% and an IoU of ~65% on the test set.
+
 Walk through a demonstration using the following link: https://colab.research.google.com/drive/19zZupsuejVLYtzib_6qZU2TCrIvKUWuj?usp=sharing.
 
 <img src='readme_images.png' style='width: 60%' />

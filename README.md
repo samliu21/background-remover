@@ -22,6 +22,12 @@ Since the target images are portraits, only the COCO images with one person with
 6. `conda activate bgrm`
 7. `python train.py` to start training!
 
+## Files
+- `model.py` and `model_parts.py` contain the U-net model
+- `coco.py` is used to preprocess and filter to COCO dataset
+- `train.py` is used to train the U-net
+- `results.py` is used to visualize the results of the model
+
 ## Model
 
 We used the classic U-net model: a series of convolutions followed by transpose convolutions to reduce, then increase the dimensions of the image. Residual connections are used to propagate earlier weights later into the model to help with backward propagation. 

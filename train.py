@@ -7,14 +7,14 @@ img_datagen = tf.keras.preprocessing.image.ImageDataGenerator(
 )
 mask_datagen = tf.keras.preprocessing.image.ImageDataGenerator()
 
-LOAD_EXISTING_MODEL = False
+LOAD_EXISTING_MODEL = True
 
 TRAIN_IMG_PATH = 'train_img'
 TRAIN_MASK_PATH = 'train_mask'
 VAL_IMG_PATH = 'val_img'
 VAL_MASK_PATH = 'val_mask'
 
-seed = 1
+seed = 4
 params = dict(
 	target_size=(128, 128),
 	class_mode=None,
@@ -45,21 +45,21 @@ train = zip(train_img_gen, train_mask_gen)
 val = zip(val_img_gen, val_mask_gen)
 
 if LOAD_EXISTING_MODEL:
-	unet = tf.keras.models.load_model('unet.h5', custom_objects={'IoU': IoU})
+	unet.load_weights('weights')
 
-# class SaveModel(tf.keras.callbacks.Callback):
-#     def on_epoch_end(self, epoch, logs=None):
-#         self.model.save('ynet{}.h5'.format(epoch), overwrite=True,) 
+class SaveModel(tf.keras.callbacks.Callback):
+    def on_epoch_end(self, epoch, logs=None):
+        self.model.save('xnet{}.h5'.format(epoch + 1), overwrite=True,) 
 
-# cbk = SaveModel()
+cbk = SaveModel()
 
 EPOCHS = 50
 
 unet.fit(
 	train, 
-	steps_per_epoch=300, 
+	steps_per_epoch=500, 
 	epochs=EPOCHS, 
 	validation_data=val,
 	validation_steps=10,
-	# callbacks=[cbk],
+	callbacks=[cbk],
 )

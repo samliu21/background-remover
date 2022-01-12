@@ -3,6 +3,7 @@ import numpy as np
 from pycocotools.coco import COCO
 import PIL.Image
 import shutil
+import os
 
 TYPE = 'val'
 
@@ -24,7 +25,7 @@ def should_keep(img):
 	Otherwise, we throw it away
 	"""
 
-	lb = 20
+	lb = 10
 	ub = 70
 
 	annIds = coco.getAnnIds(imgIds=img['id'])

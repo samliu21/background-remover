@@ -33,7 +33,7 @@ class UpSample():
 	def __call__(self, x, y, dropout=0, kernel_regularizer=None):
 		x = tf.keras.layers.Conv2DTranspose(self.out_ch, kernel_size=3, strides=2, padding='same')(x)
 		if y is not None:
-			x = tf.concat([x, y], axis=-1)
+			x = tf.keras.layers.concatenate([x, y], axis=-1)
 		x = DoubleConv(self.out_ch)(x, dropout, kernel_regularizer)
 
 		return x

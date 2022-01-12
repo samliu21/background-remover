@@ -5,7 +5,7 @@ from skimage.transform import resize
 
 import PIL.Image
 
-from model import IoU
+from model import IoU, unet
 
 IMAGE_FILEPATHS = [
 	'test_images/1.jpeg', 
@@ -36,7 +36,9 @@ kwargs = {
 	'custom_objects': {'IoU': IoU}
 }
 
-model1 = tf.keras.models.load_model('unet.h5', **kwargs)
+# model1 = unet 
+# model1.load_weights('weights')
+model1 = tf.keras.models.load_model('unet.h5', compile=False)
 
 def predict(model):
 	original_images = []

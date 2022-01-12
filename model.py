@@ -8,15 +8,15 @@ class Unet():
 
 		self.conv1 = DownSample(64)(self.inp)
 		self.conv2 = DownSample(128)(self.conv1)
-		self.conv3 = DownSample(256)(self.conv2)
-		self.conv4 = DownSample(512)(self.conv3)
-		self.conv5 = DownSample(512)(self.conv4, dropout=0.4, kernel_regularizer='l2')
+		self.conv3 = DownSample(256)(self.conv2, kernel_regularizer='l2')
+		self.conv4 = DownSample(512)(self.conv3, kernel_regularizer='l2')
+		self.conv5 = DownSample(512)(self.conv4, dropout=0.3, kernel_regularizer='l2')
 
-		self.conv6 = UpSample(512)(self.conv5, self.conv4)
-		self.conv7 = UpSample(256)(self.conv6, self.conv3)
+		self.conv6 = UpSample(512)(self.conv5, self.conv4, dropout=0.3, kernel_regularizer='l2')
+		self.conv7 = UpSample(256)(self.conv6, self.conv3, dropout=0.3, kernel_regularizer='l2')
 		self.conv8 = UpSample(128)(self.conv7, self.conv2)
-		self.conv9 = UpSample(64)(self.conv8, self.conv1)
-		self.conv10 = UpSample(64)(self.conv9, None, dropout=0.4, kernel_regularizer='l2')
+		self.conv9 = UpSample(64)(self.conv8, self.conv1, kernel_regularizer='l2')
+		self.conv10 = UpSample(64)(self.conv9, None, dropout=0.3, kernel_regularizer='l2')
 
 		self.conv11 = tf.keras.layers.Conv2D(1, 1, padding='same')(self.conv10)
 		self.conv11 = tf.keras.layers.Activation('sigmoid')(self.conv11)
@@ -24,14 +24,14 @@ class Unet():
 		self.model = tf.keras.Model(inputs=self.inp, outputs=self.conv11)
 
 		lr_schedule = tf.keras.optimizers.schedules.ExponentialDecay(
-			0.002,
-			decay_steps=300,
+			0.001,
+			decay_steps=500,
 			decay_rate=0.98,
 			staircase=True,
 		)
 
 		self.model.compile(
-			optimizer=tf.keras.optimizers.Adam(lr_schedule), 
+			optimizer=tf.keras.optimizers.Adam(0.001), 
 			loss=tf.keras.losses.BinaryCrossentropy(),
 			metrics=['accuracy', IoU],
 		)

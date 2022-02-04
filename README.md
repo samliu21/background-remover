@@ -8,11 +8,6 @@ Walk through a demonstration using the following link: https://colab.research.go
 
 <img src='test_images/readme_images.png' style='width: 60%' />
 
-## Dataset
-The <a href='https://cocodataset.org/#home'>COCO Dataset</a> was used to train the model.
-
-Since the target images are portraits, only the COCO images with one person with area between 20 and 70 percent of the entire image were kept. No data augmentation was used.
-
 ## Reproducing Steps
 1. Run `git clone https://github.com/samliu21/background-remover`. This will create a folder called `background-remover` containing most of the necessary files.
 2. Download `train_img`, `train_mask`, `val_img`, and `val_mask` from the following Google Drive: https://drive.google.com/drive/folders/1jtBTz1Nc9USNIkUnLCOraa-CaP4z61SW?usp=sharing. These folders contain the training data for the model.
@@ -22,6 +17,11 @@ Since the target images are portraits, only the COCO images with one person with
 6. `conda activate bgrm`
 7. `python train.py` to start training!
 
+## Data
+The <a href='https://cocodataset.org/#home'>COCO Dataset</a> was used to train the model.
+
+Since the target images are portraits, only the COCO images with one person with area between 20 and 70 percent of the entire image were kept. No data augmentation was used.
+
 ## Files
 - `model.py` and `model_parts.py` contain the U-net model
 - `coco.py` is used to preprocess and filter the COCO dataset
@@ -29,7 +29,6 @@ Since the target images are portraits, only the COCO images with one person with
 - `results.py` is used to visualize the results of the trained model
 
 ## Model
-
 We used the classic U-net model: a series of convolutions followed by transpose convolutions to reduce, then increase the dimensions of the image. Residual connections are used to propagate earlier weights later into the model to help with backward propagation. 
 
 Since the network is fully convolutional, the U-net can take images of any image dimension. The only requirement is that the width and length are multiples of 32. 

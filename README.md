@@ -2,23 +2,24 @@
 
 A deep U-net neural network that uses semantic segmentation to identity the background of a portrait image!
 
-The model reached a binary accuracy of ~90% and an IoU of ~65% on the test set over around 50 epochs of training on 6000 images.
+The model reached a binary accuracy of ~90% and an IoU of ~65% on the test set. 
 
 Walk through a demonstration using the following link: https://colab.research.google.com/drive/19zZupsuejVLYtzib_6qZU2TCrIvKUWuj?usp=sharing.
 
 <img src='test_images/readme_images.png' style='width: 60%' />
 
 ## Reproducing Steps
-1. Run `git clone https://github.com/samliu21/background-remover`. This will create a folder called `background-remover` containing most of the necessary files.
-2. Download `train_img`, `train_mask`, `val_img`, and `val_mask` from the following Google Drive: https://drive.google.com/drive/folders/1jtBTz1Nc9USNIkUnLCOraa-CaP4z61SW?usp=sharing. These folders contain the training data for the model.
-3. Move these files into the `background-remover` folder.
-4. Move into the folder using `cd background-remover`.
-5. `conda create --name bgrm --file requirements.txt`
-6. `conda activate bgrm`
-7. `python train.py` to start training!
+1. Run `git clone https://github.com/samliu21/background-remover`. This will download a folder called `background-remover` containing most of the necessary files.
+2. Download the model <a href="https://drive.google.com/file/d/1n_PauRKuqn-GyzAAkktixMVkCTseFXLN/view?usp=sharing">here</a> and move it into the `background-remover` folder.
+4. Navigate into the folder using `cd background-remover`.
+5. Create a virtual environment using `python -m venv .` and activate it with `source bin/activate`.
+6. Install the necessary dependencies using `python -m pip install -r requirements.txt`.
+7. Run `python results.py`!
 
 ## Data
 The <a href='https://cocodataset.org/#home'>COCO Dataset</a> was used to train the model.
+
+The `pycocotools` module was used to extract the image segmentations from the annotations of the dataset. 
 
 Since the target images are portraits, only the COCO images with one person with area between 20 and 70 percent of the entire image were kept. No data augmentation was used.
 
@@ -29,9 +30,7 @@ Since the target images are portraits, only the COCO images with one person with
 - `results.py` is used to visualize the results of the trained model
 
 ## Model
-We used the classic U-net model: a series of convolutions followed by transpose convolutions to reduce, then increase the dimensions of the image. Residual connections are used to propagate earlier weights later into the model to help with backward propagation. 
-
-Since the network is fully convolutional, the U-net can take images of any image dimension. The only requirement is that the width and length are multiples of 32. 
+I used the classic U-net model: a series of convolutions followed by transpose convolutions to reduce, then increase the dimensions of the image. Residual connections are used to propagate earlier weights later into the model to help with backward propagation. 
 
 The model was trained on 128 x 128 images. Thus, the dimensions of an inputted image are reduced to 128 x 128. The outputted mask is then scaled back to the original dimensions of the image. 
 

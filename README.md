@@ -8,7 +8,7 @@ Walk through a demonstration using the following link: https://colab.research.go
 
 <img src='test_images/readme_images.png' style='width: 60%' />
 
-## Reproducing Steps
+## Reproducing Steps (Mac OS)
 1. Run `git clone https://github.com/samliu21/background-remover`. This will download a folder called `background-remover` containing most of the necessary files.
 2. Download the model <a href="https://drive.google.com/file/d/1n_PauRKuqn-GyzAAkktixMVkCTseFXLN/view?usp=sharing">here</a> and move it into the `background-remover` folder.
 4. Navigate into the folder using `cd background-remover`.
@@ -19,7 +19,7 @@ Walk through a demonstration using the following link: https://colab.research.go
 ## Data
 The <a href='https://cocodataset.org/#home'>COCO Dataset</a> was used to train the model.
 
-The `pycocotools` module was used to extract the image segmentations from the annotations of the dataset. 
+The `pycocotools` module was used to extract the image segmentations from the dataset. 
 
 Since the target images are portraits, only the COCO images with one person with area between 20 and 70 percent of the entire image were kept. No data augmentation was used.
 
